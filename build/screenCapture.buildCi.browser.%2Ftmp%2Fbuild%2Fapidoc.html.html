@@ -1,4 +1,4 @@
-<div class="apidocDiv">
+<html><head></head><body><div class="apidocDiv">
 <style>
 /*csslint
 */
@@ -47,17 +47,10 @@
 }
 </style>
 <h1>api documentation for
-    <a
-
-        href="https://github.com/alanshaw/markdown-pdf"
-
-    >markdown-pdf (v7.0.0)</a>
+    <a href="https://github.com/alanshaw/markdown-pdf">markdown-pdf (v7.0.0)</a>
 </h1>
 <h4>Markdown to PDF converter</h4>
-<div class="apidocSectionDiv"><a
-    href="#apidoc.tableOfContents"
-    id="apidoc.tableOfContents"
-><h1>table of contents</h1></a><ol>
+<div class="apidocSectionDiv"><a href="#apidoc.tableOfContents" id="apidoc.tableOfContents"><h1>table of contents</h1></a><ol>
 
     <li class="apidocModuleLi"><a href="#apidoc.module.markdown-pdf">module markdown-pdf</a><ol>
 
@@ -97,24 +90,24 @@
     <li>description and source-code<pre class="apidocCodePre">function markdownpdf(opts) {
   opts = opts || {}
   opts.cwd = opts.cwd ? path.resolve(opts.cwd) : process.cwd()
-  opts.phantomPath = opts.phantomPath || require(&#x27;phantomjs-prebuilt&#x27;).path
-  opts.runningsPath = opts.runningsPath ? path.resolve(opts.runningsPath) : path.join(__dirname, &#x27;runnings.js&#x27;)
-  opts.cssPath = opts.cssPath ? path.resolve(opts.cssPath) : path.join(__dirname, &#x27;css&#x27;, &#x27;pdf.css&#x27;)
-  opts.highlightCssPath = opts.highlightCssPath ? path.resolve(opts.highlightCssPath) : path.join(__dirname, &#x27;css&#x27;, &#x27;highlight.css
-&#x27;)
-  opts.paperFormat = opts.paperFormat || &#x27;A4&#x27;
-  opts.paperOrientation = opts.paperOrientation || &#x27;portrait&#x27;
-  opts.paperBorder = opts.paperBorder || &#x27;2cm&#x27;
+  opts.phantomPath = opts.phantomPath || require('phantomjs-prebuilt').path
+  opts.runningsPath = opts.runningsPath ? path.resolve(opts.runningsPath) : path.join(__dirname, 'runnings.js')
+  opts.cssPath = opts.cssPath ? path.resolve(opts.cssPath) : path.join(__dirname, 'css', 'pdf.css')
+  opts.highlightCssPath = opts.highlightCssPath ? path.resolve(opts.highlightCssPath) : path.join(__dirname, 'css', 'highlight.css
+')
+  opts.paperFormat = opts.paperFormat || 'A4'
+  opts.paperOrientation = opts.paperOrientation || 'portrait'
+  opts.paperBorder = opts.paperBorder || '2cm'
   opts.renderDelay = opts.renderDelay == null ? 0 : opts.renderDelay
   opts.loadTimeout = opts.loadTimeout == null ? 10000 : opts.loadTimeout
   opts.preProcessMd = opts.preProcessMd || function () { return through() }
   opts.preProcessHtml = opts.preProcessHtml || function () { return through() }
   opts.remarkable = extend({html: true, breaks: true}, opts.remarkable)
-  opts.remarkable.preset = opts.remarkable.preset || &#x27;default&#x27;
+  opts.remarkable.preset = opts.remarkable.preset || 'default'
   opts.remarkable.plugins = opts.remarkable.plugins || []
   opts.remarkable.syntax = opts.remarkable.syntax || []
 
-  var md = &#x27;&#x27;
+  var md = ''
 
   var mdToHtml = through(
     function transform (chunk, enc, cb) {
@@ -126,7 +119,7 @@
 
       var mdParser = new Remarkable(opts.remarkable.preset, extend({
         highlight: function (str, lang) {
-          if (lang &#x26;&#x26; hljs.getLanguage(lang)) {
+          if (lang &amp;&amp; hljs.getLanguage(lang)) {
             try {
               return hljs.highlight(lang, str).value
             } catch (err) {}
@@ -136,12 +129,12 @@
             return hljs.highlightAuto(str).value
           } catch (err) {}
 
-          return &#x27;&#x27;
+          return ''
         }
       }, opts.remarkable))
 
       opts.remarkable.plugins.forEach(function (plugin) {
-        if (plugin &#x26;&#x26; typeof plugin === &#x27;function&#x27;) {
+        if (plugin &amp;&amp; typeof plugin === 'function') {
           mdParser.use(plugin)
         }
       })
@@ -166,25 +159,25 @@
   var inputStream = through()
   var outputStream = through()
 
-  // Stop input stream emitting data events until we&#x27;re ready to read them
+  // Stop input stream emitting data events until we're ready to read them
   inputStream.pause()
 
   // Create tmp file to save HTML for phantom to process
-  tmp.file({postfix: &#x27;.html&#x27;}, function (err, tmpHtmlPath, tmpHtmlFd) {
-    if (err) return outputStream.emit(&#x27;error&#x27;, err)
+  tmp.file({postfix: '.html'}, function (err, tmpHtmlPath, tmpHtmlFd) {
+    if (err) return outputStream.emit('error', err)
     fs.close(tmpHtmlFd)
 
     // Create tmp file to save PDF to
-    tmp.file({postfix: &#x27;.pdf&#x27;}, function (err, tmpPdfPath, tmpPdfFd) {
-      if (err) return outputStream.emit(&#x27;error&#x27;, err)
+    tmp.file({postfix: '.pdf'}, function (err, tmpPdfPath, tmpPdfFd) {
+      if (err) return outputStream.emit('error', err)
       fs.close(tmpPdfFd)
 
       var htmlToTmpHtmlFile = fs.createWriteStream(tmpHtmlPath)
 
-      htmlToTmpHtmlFile.on(&#x27;finish&#x27;, function () {
+      htmlToTmpHtmlFile.on('finish', function () {
         // Invoke phantom to generate the PDF
         var childArgs = [
-          path.join(__dirname, &#x27;phantom&#x27;, &#x27;render.js&#x27;),
+          path.join(__dirname, 'phantom', 'render.js'),
           tmpHtmlPath,
           tmpPdfPath,
           opts.cwd,
@@ -201,7 +194,7 @@
         childProcess.execFile(opts.phantomPath, childArgs, function (err, stdout, stderr) {
           // if (stdout) console.log(stdout)
           // if (stderr) console.error(stderr)
-          if (err) return outputStream.emit(&#x27;error&#x27;, err)
+          if (err) return outputStream.emit('error', err)
           fs.createReadStream(tmpPdfPath).pipe(outputStream)
         })
       })
@@ -247,3 +240,4 @@
     ]
 </div>
 </div>
+</body></html>

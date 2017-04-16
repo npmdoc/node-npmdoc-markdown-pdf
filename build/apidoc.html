@@ -61,12 +61,183 @@
 
     <li class="apidocModuleLi"><a href="#apidoc.module.markdown-pdf">module markdown-pdf</a><ol>
 
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.markdown-pdf.markdown-pdf">
+            function <span class="apidocSignatureSpan"></span>markdown-pdf
+            <span class="apidocSignatureSpan">(opts)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.markdown-pdf.toString">
+            function <span class="apidocSignatureSpan">markdown-pdf.</span>toString
+            <span class="apidocSignatureSpan">()</span>
+            </a>
+
+        </li>
+
     </ol></li>
 
 </ol></div>
 
 <div class="apidocSectionDiv">
 <h1><a href="#apidoc.module.markdown-pdf" id="apidoc.module.markdown-pdf">module markdown-pdf</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.markdown-pdf.markdown-pdf" id="apidoc.element.markdown-pdf.markdown-pdf">
+        function <span class="apidocSignatureSpan"></span>markdown-pdf
+        <span class="apidocSignatureSpan">(opts)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function markdownpdf(opts) {
+  opts = opts || {}
+  opts.cwd = opts.cwd ? path.resolve(opts.cwd) : process.cwd()
+  opts.phantomPath = opts.phantomPath || require(&#x27;phantomjs-prebuilt&#x27;).path
+  opts.runningsPath = opts.runningsPath ? path.resolve(opts.runningsPath) : path.join(__dirname, &#x27;runnings.js&#x27;)
+  opts.cssPath = opts.cssPath ? path.resolve(opts.cssPath) : path.join(__dirname, &#x27;css&#x27;, &#x27;pdf.css&#x27;)
+  opts.highlightCssPath = opts.highlightCssPath ? path.resolve(opts.highlightCssPath) : path.join(__dirname, &#x27;css&#x27;, &#x27;highlight.css
+&#x27;)
+  opts.paperFormat = opts.paperFormat || &#x27;A4&#x27;
+  opts.paperOrientation = opts.paperOrientation || &#x27;portrait&#x27;
+  opts.paperBorder = opts.paperBorder || &#x27;2cm&#x27;
+  opts.renderDelay = opts.renderDelay == null ? 0 : opts.renderDelay
+  opts.loadTimeout = opts.loadTimeout == null ? 10000 : opts.loadTimeout
+  opts.preProcessMd = opts.preProcessMd || function () { return through() }
+  opts.preProcessHtml = opts.preProcessHtml || function () { return through() }
+  opts.remarkable = extend({html: true, breaks: true}, opts.remarkable)
+  opts.remarkable.preset = opts.remarkable.preset || &#x27;default&#x27;
+  opts.remarkable.plugins = opts.remarkable.plugins || []
+  opts.remarkable.syntax = opts.remarkable.syntax || []
+
+  var md = &#x27;&#x27;
+
+  var mdToHtml = through(
+    function transform (chunk, enc, cb) {
+      md += chunk
+      cb()
+    },
+    function flush (cb) {
+      var self = this
+
+      var mdParser = new Remarkable(opts.remarkable.preset, extend({
+        highlight: function (str, lang) {
+          if (lang &#x26;&#x26; hljs.getLanguage(lang)) {
+            try {
+              return hljs.highlight(lang, str).value
+            } catch (err) {}
+          }
+
+          try {
+            return hljs.highlightAuto(str).value
+          } catch (err) {}
+
+          return &#x27;&#x27;
+        }
+      }, opts.remarkable))
+
+      opts.remarkable.plugins.forEach(function (plugin) {
+        if (plugin &#x26;&#x26; typeof plugin === &#x27;function&#x27;) {
+          mdParser.use(plugin)
+        }
+      })
+
+      opts.remarkable.syntax.forEach(function (rule) {
+        try {
+          mdParser.core.ruler.enable([rule])
+        } catch (err) {}
+        try {
+          mdParser.block.ruler.enable([rule])
+        } catch (err) {}
+        try {
+          mdParser.inline.ruler.enable([rule])
+        } catch (err) {}
+      })
+
+      self.push(mdParser.render(md))
+      self.push(null)
+    }
+  )
+
+  var inputStream = through()
+  var outputStream = through()
+
+  // Stop input stream emitting data events until we&#x27;re ready to read them
+  inputStream.pause()
+
+  // Create tmp file to save HTML for phantom to process
+  tmp.file({postfix: &#x27;.html&#x27;}, function (err, tmpHtmlPath, tmpHtmlFd) {
+    if (err) return outputStream.emit(&#x27;error&#x27;, err)
+    fs.close(tmpHtmlFd)
+
+    // Create tmp file to save PDF to
+    tmp.file({postfix: &#x27;.pdf&#x27;}, function (err, tmpPdfPath, tmpPdfFd) {
+      if (err) return outputStream.emit(&#x27;error&#x27;, err)
+      fs.close(tmpPdfFd)
+
+      var htmlToTmpHtmlFile = fs.createWriteStream(tmpHtmlPath)
+
+      htmlToTmpHtmlFile.on(&#x27;finish&#x27;, function () {
+        // Invoke phantom to generate the PDF
+        var childArgs = [
+          path.join(__dirname, &#x27;phantom&#x27;, &#x27;render.js&#x27;),
+          tmpHtmlPath,
+          tmpPdfPath,
+          opts.cwd,
+          opts.runningsPath,
+          opts.cssPath,
+          opts.highlightCssPath,
+          opts.paperFormat,
+          opts.paperOrientation,
+          opts.paperBorder,
+          opts.renderDelay,
+          opts.loadTimeout
+        ]
+
+        childProcess.execFile(opts.phantomPath, childArgs, function (err, stdout, stderr) {
+          // if (stdout) console.log(stdout)
+          // if (stderr) console.error(stderr)
+          if (err) return outputStream.emit(&#x27;error&#x27;, err)
+          fs.createReadStream(tmpPdfPath).pipe(outputStream)
+        })
+      })
+
+      // Setup the pipeline
+      inputStream
+        .pipe(opts.preProcessMd())
+        .pipe(mdToHtml)
+        .pipe(opts.preProcessHtml())
+        .pipe(htmlToTmpHtmlFile)
+
+      inputStream.resume()
+    })
+  })
+
+  return extend(
+    duplexer(inputStream, outputStream),
+    streamft ...</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.markdown-pdf.toString" id="apidoc.element.markdown-pdf.toString">
+        function <span class="apidocSignatureSpan">markdown-pdf.</span>toString
+        <span class="apidocSignatureSpan">()</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">toString = function () {
+    return toString;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
 
 </div>
 
