@@ -1,6 +1,6 @@
 {
     "author": "kai zhu <kaizhu256@gmail.com>",
-    "description": "api documentation for [markdown-pdf (v7.0.0)](https://github.com/alanshaw/markdown-pdf) [![npm package](https://img.shields.io/npm/v/npmdoc-markdown-pdf.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-markdown-pdf) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-markdown-pdf.svg)](https://travis-ci.org/npmdoc/node-npmdoc-markdown-pdf)",
+    "description": "#### api documentation for  [markdown-pdf (v7.0.0)](https://github.com/alanshaw/markdown-pdf)  [![npm package](https://img.shields.io/npm/v/npmdoc-markdown-pdf.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-markdown-pdf) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-markdown-pdf.svg)](https://travis-ci.org/npmdoc/node-npmdoc-markdown-pdf)",
     "devDependencies": {
         "electron-lite": "kaizhu256/node-electron-lite#alpha",
         "markdown-pdf": "*",
@@ -35,5 +35,5 @@
         "start": "(set -e; export PORT=${PORT:-8080}; utility2 start test.js)",
         "test": "(set -e; export PORT=$(utility2 shServerPortRandom); utility2 test test.js)"
     },
-    "version": "0.0.2"
+    "version": "0.0.3"
 }
