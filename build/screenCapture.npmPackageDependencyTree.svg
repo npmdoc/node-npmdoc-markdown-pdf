@@ -9,7 +9,7 @@
 <tspan x="10" y="106">  │ └── graceful-readlink@1.0.1 </tspan>
 <tspan x="10" y="122">  ├── duplexer@0.1.1 </tspan>
 <tspan x="10" y="138">  ├── extend@3.0.0 </tspan>
-<tspan x="10" y="154">  ├── highlight.js@9.10.0 </tspan>
+<tspan x="10" y="154">  ├── highlight.js@9.11.0 </tspan>
 <tspan x="10" y="170">  ├─┬ phantomjs-prebuilt@2.1.14 </tspan>
 <tspan x="10" y="186">  │ ├── es6-promise@4.0.5 </tspan>
 <tspan x="10" y="202">  │ ├─┬ extract-zip@1.5.0 </tspan>
